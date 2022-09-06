@@ -18,26 +18,26 @@ public class Main {
 		int start = 0;
 		int end = N-1;
 		int middle = 0;
-		for(int i=0;i<N;i++) {
-			if(arr[start+i]>=0) {
-				middle = i;
-				break;
-			}
-			else if(arr[end-i]<=0) {
-				middle = i;
-				break;
-			}
-		}
-		if(middle==0) {
-			if(arr[0]>=0) {
-				System.out.println(arr[0]+" "+arr[1]);
-				return;
-			}
-			else {
-				System.out.println(arr[N-2]+" "+arr[N-1]);
-				return;
-			}
-		}
+//		for(int i=0;i<N;i++) {
+//			if(arr[start+i]>=0) {
+//				middle = i;
+//				break;
+//			}
+//			else if(arr[end-i]<=0) {
+//				middle = i;
+//				break;
+//			}
+//		}
+//		if(middle==0) {
+//			if(arr[0]>=0) {
+//				System.out.println(arr[0]+" "+arr[1]);
+//				return;
+//			}
+//			else {
+//				System.out.println(arr[N-2]+" "+arr[N-1]);
+//				return;
+//			}
+//		}
 		int min = 2_000_000_000;
 		int res1 = 0;
 		int res2 = 0;
