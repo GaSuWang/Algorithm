@@ -1,6 +1,3 @@
-
-
-////
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -37,8 +34,8 @@ public class Main {
     	int V = Integer.parseInt(st.nextToken());
     	int E = Integer.parseInt(st.nextToken());
     	//int map[][] = new int[V][V];
-    	List<Data> [] list = new List[V];
-//    	Arrays.fill(list, new ArrayList<Data>());
+    	List<int[]> [] list = new List[V];
+//    	Arrays.fill(list, new ArrayList<int[]>());
     	boolean check[] = new boolean[V];
 //    	int minEdges[] = new int [V];
     	PriorityQueue <Data> pq = new PriorityQueue<Data>();
@@ -47,14 +44,14 @@ public class Main {
     		int v1 = Integer.parseInt(st.nextToken())-1;
     		int v2 = Integer.parseInt(st.nextToken())-1;
     		int len = Integer.parseInt(st.nextToken());
-    		if(list[v1]==null) {
-    			list[v1] = new ArrayList<Data>();
+            if(list[v1]==null) {
+    			list[v1] = new ArrayList<int[]>();
     		}
     		if(list[v2]==null) {
-    			list[v2] = new ArrayList<Data>();
+    			list[v2] = new ArrayList<int[]>();
     		}
-    		list[v1].add(new Data(v2,len));
-    		list[v2].add(new Data(v1,len));
+    		list[v1].add(new int[] {v2,len});
+    		list[v2].add(new int[] {v1,len});
 //    		map[v1][v2] = len;
 //  		map[v2][v1] = len;
     	}
@@ -96,8 +93,8 @@ public class Main {
     			break;
     		}
     		for(int j=0; j<list[cur.v].size();j++) {
-    			if(check[list[cur.v].get(j).v]) continue;
-    			pq.offer(new Data(list[cur.v].get(j).v,list[cur.v].get(j).w));
+    			if(check[list[cur.v].get(j)[0]]) continue;
+    			pq.offer(new Data(list[cur.v].get(j)[0],list[cur.v].get(j)[1]));
     		}
     	}
     	System.out.println(res);	
