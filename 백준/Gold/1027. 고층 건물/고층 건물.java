@@ -1,46 +1,54 @@
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.*;
+import java.util.StringTokenizer;
 
+/*
+ * 2022.11.15
+ * 고층 건물
+ */
 public class Main {
-
-	public static void main(String[] args) throws IOException {
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		int N = Integer.parseInt(br.readLine());
-		//빌딩 높이
-		int building[] = new int[N];
-		//각 빌딩에서 보이는 빌딩 수
-		int count[] = new int[N];
-		StringTokenizer st = new StringTokenizer(br.readLine());
-		for(int i=0; i<N;i++) {
-			building[i] = Integer.parseInt(st.nextToken());
-		}
-		//i 1증가당 높이 증가량
-		double num;
-		//빌딩하나씩 선택
-		for(int i=0;i<N;i++) {
-			//선택된 빌딩 오른쪽에 위치한 빌딩들 확인
-			//왼쪽 빌딩들은 이미 왼쪽에 있는 빌딩을 선택했을때 확인함
-			outer: for(int j=i+1;j<N;j++) {
-				//증가율 = (빌딩j높이 - 빌딩i높이)/(j-i)
-				num =(double)(building[j]-building[i])/(j-i);
-				//빌딩 i와 빌딩 j 사이에 있는 빌딩들 확인
-				for(int k=i+1;k<j;k++) {
-					//빌딩k의 높이가 빌딩 i,j를 이은 선분에 닿으면 빌딩 i,j는 서로 보이지 않음
-					if(building[i]+(num*(k-i))<=building[k]) continue outer;
-				}
-				//빌딩i가 보는 빌딩수 +1
-				count[i]++;
-				//빌딩j가 보는 빌딩수 +1
-				count[j]++;
-			}
-		}
-		int res = 0;
-		for(int i=0; i<N;i++) {
-			res = Math.max(res,count[i]);
-		}
-		System.out.println(res);
-	}
-}
+    public static void main(String[] args) throws IOException {
+//    	double a = 1.0 * 3 / 10;
+//    	double b =;
+    	
+//    	System.out.println(a);
+//    	System.out.println(b);
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        int n = Integer.parseInt(br.readLine());
+        StringTokenizer st = new StringTokenizer(br.readLine());
+        
+        int[] buildings = new int[n]; // 빌딩의 높이
+        for(int i = 0; i < n; i++) {
+            buildings[i] = Integer.parseInt(st.nextToken());
+        }
+        
+        int result = 0; // 결과
+        for(int i = 0; i < n; i++) { // 빌딩 A
+            int cnt = 0; 
+            for(int j = 0; j < n; j++) { // 빌딩 B
+                if(i == j) continue;
+                int start = Math.min(i, j);
+                int end = Math.max(i, j);
+                double lean = (double)(buildings[end]-buildings[start])/(end-start); // 빌딩 A, B의 기울기
+                boolean flag = true;
+                //double height = buildings[start];
+                for(int k = start+1; k < end; k++) { // A, B의 기울기로 선분을 그었을 때 그안에 있는 빌딩들이 더 작아야함
+                    //height += lean;
+                    if(buildings[start]+(lean*(k-start)) <= buildings[k]) {
+                        flag = false;
+                        break; 
+                    }
+                }
+                
+                if(flag) cnt++;
+            }
+            
+//            System.out.println(cnt);
+            result = Math.max(result, cnt); // 최고 값 갱신
+        }
+        
+        System.out.println(result);
+        
+    }
+}                                        
