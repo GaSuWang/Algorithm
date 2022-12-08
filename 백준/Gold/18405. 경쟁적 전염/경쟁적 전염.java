@@ -15,10 +15,13 @@ public class Main {
 		StringTokenizer st = new StringTokenizer(br.readLine());
 		int N = Integer.parseInt(st.nextToken());
 		int K = Integer.parseInt(st.nextToken());
+		//시험관
 		int [][] map = new int[N][N];
+		//바이러스 별 위치 저장용
 		List<int[]>[]virus = new ArrayList[K+1];
 		int dx[] = {1,0,-1,0};
 		int dy[] = {0,1,0,-1};
+		//입력받기
 		for(int i=0; i<N;i++) {
 			st = new StringTokenizer(br.readLine());
 			for(int j=0;j<N;j++) {
@@ -27,6 +30,7 @@ public class Main {
 				if(virus[map[i][j]]==null) {
 					virus[map[i][j]] = new ArrayList<int[]>();
 				}
+				//바이러스 위치 저장
 				virus[map[i][j]].add(new int[] {i,j});
 			}
 		}
@@ -34,9 +38,10 @@ public class Main {
 		int S = Integer.parseInt(st.nextToken());
 		int targetY = Integer.parseInt(st.nextToken())-1;
 		int targetX = Integer.parseInt(st.nextToken())-1;
-//		System.out.println(targetY+" "+ targetX);
+
 
 		Queue<int []> queue = new LinkedList<>();
+		//초기 바이러스 큐에 넣기
 		for(int i=1;i<=K;i++) {
 			if(virus[i]==null) continue;
 			for(int j=0;j<virus[i].size();j++) {
@@ -45,16 +50,13 @@ public class Main {
 			}
 			
 		}
-//		for(int j=0;j<N;j++) {
-//			System.out.println(Arrays.toString(map[j]));
-//		}
-//		System.out.println("-------------");
-		
+		//시간만큼 반복
 		for(int i=0;i<S;i++) {
-			
+			//1초 기준으로 반복하기
 			int size = queue.size();
 			for(int j=0; j<size;j++) {
 				int [] cur = queue.poll();
+				
 				for(int k=0; k<4;k++) {
 					int nextX = cur[1] +dx[k];
 					int nextY = cur[0] +dy[k];
@@ -64,10 +66,6 @@ public class Main {
 					map[nextY][nextX] = cur[2];
 				}
 			}
-//			for(int j=0;j<N;j++) {
-//				System.out.println(Arrays.toString(map[j]));
-//			}
-//			System.out.println("-------------");
 		}
 		System.out.println(map[targetY][targetX]);
 				
