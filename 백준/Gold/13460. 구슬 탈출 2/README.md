@@ -32,3 +32,185 @@
 
  <p>최소 몇 번 만에 빨간 구슬을 구멍을 통해 빼낼 수 있는지 출력한다. 만약, 10번 이하로 움직여서 빨간 구슬을 구멍을 통해 빼낼 수 없으면 -1을 출력한다.</p>
 
+```Java
+////
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.StringTokenizer;
+
+public class Main {
+	static class Pos {
+		int[] red;
+		int[] blue;
+		int dir;
+
+		Pos(int[] red, int[] blue, int dir) {
+			this.red = red;
+			this.blue = blue;
+			this.dir = dir;
+		}
+
+		@Override
+		public String toString() {
+			return "Pos [red=" + Arrays.toString(red) + ", blue=" + Arrays.toString(blue) + ", dir=" + dir + "]";
+		}
+		
+	}
+
+	public static void main(String[] args) throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		StringTokenizer st = new StringTokenizer(br.readLine());
+		int N = Integer.parseInt(st.nextToken());
+		int M = Integer.parseInt(st.nextToken());
+		int[] target = new int[2];
+		char[][] map = new char[N][M];
+		//위치 체크 배열 [빨강y][빨강x][파랑y][파랑x]
+		boolean check[][][][] = new boolean[N][M][N][M];
+		//시작위치,처음에는 방향을 저장해서 이전에 왔던 방향으로 다시 돌아가지 않게 하려 했으나 방문배열 만들어서 안씀
+		Pos start = new Pos(new int[2], new int[2], -3);
+		//입력받기
+		for (int i = 0; i < N; i++) {
+			char[] temp = br.readLine().toCharArray();
+			for (int j = 0; j < M; j++) {
+				map[i][j] = temp[j];
+				//구멍위치
+				if (map[i][j] == 'O') {
+					target[0] = i;
+					target[1] = j;
+				}
+				//구슬 위치, 처음위치 저장하고 빈칸으로 바꿈
+				else if (map[i][j] == 'R') {
+					start.red[0] = i;
+					start.red[1] = j;
+					map[i][j] = '.';
+				} else if (map[i][j] == 'B') {
+					start.blue[0] = i;
+					start.blue[1] = j;
+					map[i][j] = '.';
+				}
+			}
+		}
+
+		Queue<Pos> queue = new LinkedList<Pos>();
+		//시작위치 큐에 넣고 방문처리
+		queue.offer(start);
+		check[start.red[0]][start.red[1]][start.blue[0]][start.blue[1]] = true;
+		//움직인 횟수
+		int iter = 0;
+		//현재 움직임 단계에서 큐 사이즈
+		int size;
+		//큐가 빌때까지 혹은 10번 넘을때까지
+		while (!queue.isEmpty() && iter < 10) {
+			iter++;
+			size = queue.size();
+			//현재 움직임 횟수에서 반복
+			while (--size >=0) {
+				//현재 구슬 위치
+				Pos cur = queue.poll();
+				//4방향으로 움직임
+				for (int i = 0; i < 4; i++) {
+					//구슬을 움직이는 moving 메소드
+					Pos next = moving(cur, i, map);
+					//구멍에 빠지면 x,y위치 0,0으로 바꿈
+					//빨강,파랑 동시에 구멍에 빠질 수 있기 때문에 파랑먼저 검사
+					//파랑 구슬이 구멍에 빠지면 이번건 실패이기 때문에 건너뜀
+					if (next.blue[0] == 0 && next.blue[1] == 0)
+						continue;
+					//빨강 구슬이 구멍에 빠지면 성공했기 때문에 반복회수 출력 후 끝
+					if (next.red[0] == 0 && next.red[1] == 0) {
+						System.out.println(iter);
+						return;
+					}
+					//만약 방문했으면 건너뜀
+					if (check[next.red[0]][next.red[1]][next.blue[0]][next.blue[1]])
+						continue;
+					//큐에 넣고 방문처리
+					queue.offer(next);
+					check[next.red[0]][next.red[1]][next.blue[0]][next.blue[1]] = true;
+					
+				}
+			}
+		}
+		System.out.println(-1);
+
+	}
+
+	public static Pos moving(Pos cur, int dir, char[][] map) {
+		int[] dx = { 1, 0, -1, 0 };
+		int[] dy = { 0, 1, 0, -1 };
+		//다음 구슬 위치 초기화
+		Pos next = new Pos(new int[] { -1, -1 }, new int[] { -1, -1 }, dir);
+		//flag 구슬이 움직인 경로에 다른 구슬이 있는지 판별, 있다면 구슬 위치 조정해야함
+		boolean flagR = false;
+		boolean flagB = false;
+		//빨강 먼저 움직임
+		//현재좌표 저장
+		int curX = cur.red[1];
+		int curY = cur.red[0];
+		while (true) {
+			//좌표 다음으로 옮김
+			int nextX = curX + dx[dir];
+			int nextY = curY + dy[dir];
+			//옮긴 좌표 벽인지 확인, 벽이면 반복 멈춤
+			if (map[nextY][nextX] == '#')
+				break;
+			//옮긴 좌표 구멍이면 좌표 0,0으로 초기화,
+			//구멍에 빠졌기때문에 위치조정 불필요 flag false처리
+			if (map[nextY][nextX] == 'O') {
+				curX = 0;
+				curY = 0;
+				flagR = false;
+				break;
+			}
+			//만약 움직이다가 다른 구슬을 만나면 flag true
+			if(nextY==cur.blue[0]&&nextX==cur.blue[1]) {
+				flagR = true;
+			}
+			//현재위치를 옮긴 위치로 갱신
+			curX = nextX;
+			curY = nextY;
+		}
+		//만약 옮기다가 다른 구슬이 있었으면 한칸 이전으로 움직임
+		//구슬은 1칸에 하나만 있을 수 있음
+		//구슬을 움직일 때 다른 구슬은 고려하지 않고 옮겼기 때문에 여기서 다른 구슬영향 반영
+		if (flagR) {
+			curX = curX - dx[dir];
+			curY = curY - dy[dir];
+		}
+		//파랑구슬 빨강구슬과 동일한 로직
+		next.red[0] = curY;
+		next.red[1] = curX;
+		curX = cur.blue[1];
+		curY = cur.blue[0];
+		while (true) {
+			int nextX = curX + dx[dir];
+			int nextY = curY + dy[dir];
+			if (map[nextY][nextX] == '#')
+				break;
+			if (map[nextY][nextX] == 'O') {
+				curX = 0;
+				curY = 0;
+				flagB = false;
+				break;
+			}
+			if(nextY==cur.red[0]&&nextX==cur.red[1]) {
+				flagB = true;
+			}
+			curX = nextX;
+			curY = nextY;
+		}
+		
+		if (flagB) {
+			curX = curX - dx[dir];
+			curY = curY - dy[dir];
+		}
+		next.blue[0] = curY;
+		next.blue[1] = curX;
+		return next;
+	}
+}
+```
